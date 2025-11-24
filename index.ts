@@ -1,16 +1,6 @@
-import { readFileSync } from "fs";
 import fetch from "node-fetch"
+import fs from "fs"
 
-
-
-
-
-
-const raw = readFileSync("./tran.txt", "utf8")
-
-const data = JSON.parse(raw)
-
-const actions = data.actions
 
 function traverse(node:any, results:string[] = []){
 		
@@ -39,7 +29,7 @@ function traverse(node:any, results:string[] = []){
 				}
 		}
 
-		return results
+		return results.slice(1,results.length - 2)	
 
 }
 	
@@ -120,13 +110,27 @@ function get_TranscriptParams(HTMLtxt: string){
 
 
 (async () => {
-		const videoId = getVideoID("https://www.youtube.com/watch?v=sJBaMJfxzYk");
+		const videoId = getVideoID("... add your youtube url link");
 
-		const html = await htmlpage("sJBaMJfxzYk")
+		const html = await htmlpage(videoId)
 		
 		const params = get_TranscriptParams(html)
 		const transcript = await getTranscript(videoId,params) ;
 
 
-		console.log(JSON.stringify(transcript, null, 2));
+		let transcript_JSON = JSON.stringify(transcript, null, 2)
+
+		const raw = JSON.parse(transcript_JSON)
+		let results:string[] = []
+
+		
+		
+		
+		fs.writeFileSync("transcript.txt",traverse(raw,results).join("\n"))
+		
+		console.log("Saved to transcript.txt")
+
+		
+
 })();
+
